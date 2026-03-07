@@ -1,0 +1,7 @@
+{
+  "name": "NutriLens - Calorie Tracker",
+  "description": "An AI-powered nutrition tracker that estimates calories from meal photos and descriptions, providing personalized daily goals based on your physical profile.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
