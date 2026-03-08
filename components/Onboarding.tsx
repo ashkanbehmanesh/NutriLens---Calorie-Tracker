@@ -86,6 +86,7 @@ const Onboarding: React.FC<Props> = ({ onComplete }) => {
                     <Scale className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                     <input
                       type="number"
+                      step="any"
                       required
                       value={formData.weight}
                       onChange={(e) => setFormData({ ...formData, weight: parseFloat(e.target.value) || 0 })}
@@ -100,6 +101,7 @@ const Onboarding: React.FC<Props> = ({ onComplete }) => {
                     <Ruler className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                     <input
                       type="number"
+                      step="any"
                       required
                       value={formData.height}
                       onChange={(e) => setFormData({ ...formData, height: parseFloat(e.target.value) || 0 })}
@@ -275,6 +277,7 @@ const Onboarding: React.FC<Props> = ({ onComplete }) => {
                   <label className="text-sm font-bold text-slate-700 mb-2 block">Waist (cm)</label>
                   <input
                     type="number"
+                    step="any"
                     value={formData.waist || ''}
                     onChange={(e) => setFormData({ ...formData, waist: parseFloat(e.target.value) || undefined })}
                     className="w-full px-6 py-4 bg-slate-100 border-none rounded-[20px] focus:ring-2 focus:ring-blue-500 text-slate-900 font-medium transition-all outline-none"
@@ -285,6 +288,7 @@ const Onboarding: React.FC<Props> = ({ onComplete }) => {
                   <label className="text-sm font-bold text-slate-700 mb-2 block">Hips (cm)</label>
                   <input
                     type="number"
+                    step="any"
                     value={formData.hips || ''}
                     onChange={(e) => setFormData({ ...formData, hips: parseFloat(e.target.value) || undefined })}
                     className="w-full px-6 py-4 bg-slate-100 border-none rounded-[20px] focus:ring-2 focus:ring-blue-500 text-slate-900 font-medium transition-all outline-none"
@@ -295,6 +299,7 @@ const Onboarding: React.FC<Props> = ({ onComplete }) => {
                   <label className="text-sm font-bold text-slate-700 mb-2 block">Chest (cm)</label>
                   <input
                     type="number"
+                    step="any"
                     value={formData.chest || ''}
                     onChange={(e) => setFormData({ ...formData, chest: parseFloat(e.target.value) || undefined })}
                     className="w-full px-6 py-4 bg-slate-100 border-none rounded-[20px] focus:ring-2 focus:ring-blue-500 text-slate-900 font-medium transition-all outline-none"

@@ -1,7 +1,8 @@
 
 import React, { useState } from 'react';
 import { UserProfile, Gender, Goal, ActivityLevel, WeightGoalSpeed } from '../types';
-import { ChevronLeft, User, Scale, Ruler, Target, Trash2, Save, Zap, Dumbbell, Timer, TrendingDown, FastForward } from 'lucide-react';
+import { auth, signOut } from '../firebase';
+import { ChevronLeft, User, Scale, Ruler, Target, Trash2, Save, Zap, Dumbbell, Timer, TrendingDown, FastForward, LogOut } from 'lucide-react';
 
 interface Props {
   user: UserProfile;
@@ -15,6 +16,12 @@ const ProfileSettings: React.FC<Props> = ({ user, onSave, onBack, onReset }) => 
 
   const handleSave = () => {
     onSave(formData);
+  };
+
+  const handleLogout = async () => {
+    if (confirm("Are you sure you want to sign out?")) {
+      await signOut(auth);
+    }
   };
 
   return (
@@ -47,6 +54,7 @@ const ProfileSettings: React.FC<Props> = ({ user, onSave, onBack, onReset }) => 
                 <label className="text-xs font-black text-slate-700 mb-2 block px-1">Weight (kg)</label>
                 <input
                   type="number"
+                  step="any"
                   value={formData.weight}
                   onChange={(e) => setFormData({ ...formData, weight: parseFloat(e.target.value) || 0 })}
                   className="w-full px-6 py-4 bg-slate-50 border-none rounded-[20px] focus:ring-2 focus:ring-blue-500 text-slate-900 font-bold outline-none"
@@ -56,6 +64,7 @@ const ProfileSettings: React.FC<Props> = ({ user, onSave, onBack, onReset }) => 
                 <label className="text-xs font-black text-slate-700 mb-2 block px-1">Height (cm)</label>
                 <input
                   type="number"
+                  step="any"
                   value={formData.height}
                   onChange={(e) => setFormData({ ...formData, height: parseFloat(e.target.value) || 0 })}
                   className="w-full px-6 py-4 bg-slate-50 border-none rounded-[20px] focus:ring-2 focus:ring-blue-500 text-slate-900 font-bold outline-none"
@@ -101,77 +110,24 @@ const ProfileSettings: React.FC<Props> = ({ user, onSave, onBack, onReset }) => 
         </section>
 
         <section className="space-y-4">
-          <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest px-2">Main Goal</h3>
-          <div className="grid grid-cols-1 gap-2">
-            {Object.values(Goal).map((g) => (
-              <button
-                key={g}
-                onClick={() => setFormData({ ...formData, goal: g })}
-                className={`w-full text-left p-5 rounded-[24px] border-2 transition-all flex items-center justify-between ${
-                  formData.goal === g 
-                    ? 'border-blue-500 bg-blue-50/50' 
-                    : 'border-white bg-white shadow-sm'
-                }`}
-              >
-                <span className={`font-black ${formData.goal === g ? 'text-blue-600' : 'text-slate-600'}`}>{g}</span>
-                {formData.goal === g && <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center text-white"><Save className="w-3 h-3" /></div>}
-              </button>
-            ))}
+          <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest px-2">Account</h3>
+          <div className="space-y-3">
+            <button 
+              onClick={handleLogout}
+              className="w-full py-5 bg-white border border-slate-200 text-slate-600 font-black rounded-[24px] flex items-center justify-center gap-2 hover:bg-slate-50 transition-all shadow-sm"
+            >
+              <LogOut className="w-5 h-5" /> Sign Out
+            </button>
+            <button 
+              onClick={onReset}
+              className="w-full py-5 bg-rose-50 text-rose-500 font-black rounded-[24px] flex items-center justify-center gap-2 hover:bg-rose-100 transition-all"
+            >
+              <Trash2 className="w-5 h-5" /> Reset My Data
+            </button>
           </div>
         </section>
-
-        {formData.goal !== Goal.STEADY && (
-          <section className="space-y-4">
-            <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest px-2">Goal Pace</h3>
-            <div className="bg-white rounded-[32px] p-6 shadow-sm border border-slate-100 space-y-3">
-              {[
-                { val: WeightGoalSpeed.RELAXED, icon: <Timer className="w-4 h-4" /> },
-                { val: WeightGoalSpeed.MODERATE, icon: <TrendingDown className="w-4 h-4" /> },
-                { val: WeightGoalSpeed.INTENSE, icon: <FastForward className="w-4 h-4" /> }
-              ].map((pace) => (
-                <button
-                  key={pace.val}
-                  onClick={() => setFormData({ ...formData, weightGoalSpeed: pace.val })}
-                  className={`w-full text-left p-4 rounded-[20px] border-2 transition-all flex items-center gap-3 ${
-                    formData.weightGoalSpeed === pace.val 
-                      ? 'border-blue-500 bg-blue-50/50' 
-                      : 'border-slate-50 bg-slate-50'
-                  }`}
-                >
-                  <div className={`p-2 rounded-lg ${formData.weightGoalSpeed === pace.val ? 'bg-blue-500 text-white' : 'bg-white text-slate-400'}`}>
-                    {pace.icon}
-                  </div>
-                  <span className={`font-bold text-sm ${formData.weightGoalSpeed === pace.val ? 'text-slate-900' : 'text-slate-600'}`}>{pace.val}</span>
-                </button>
-              ))}
-            </div>
-          </section>
-        )}
-
-        <section className="space-y-4">
-          <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest px-2">Body Measurements</h3>
-          <div className="bg-white rounded-[32px] p-6 shadow-sm border border-slate-100 space-y-4">
-            {['waist', 'hips', 'chest'].map(field => (
-              <div key={field}>
-                <label className="text-xs font-black text-slate-700 mb-2 block px-1 capitalize">{field} (cm)</label>
-                <input
-                  type="number"
-                  value={(formData as any)[field] || ''}
-                  onChange={(e) => setFormData({ ...formData, [field]: parseFloat(e.target.value) || undefined })}
-                  className="w-full px-6 py-4 bg-slate-50 border-none rounded-[20px] focus:ring-2 focus:ring-blue-500 text-slate-900 font-bold outline-none"
-                  placeholder="Optional"
-                />
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <button 
-          onClick={onReset}
-          className="w-full py-5 bg-rose-50 text-rose-500 font-black rounded-[24px] flex items-center justify-center gap-2 hover:bg-rose-100 transition-all mb-12"
-        >
-          <Trash2 className="w-5 h-5" /> Reset My Data
-        </button>
+        
+        <div className="h-10" />
       </div>
     </div>
   );

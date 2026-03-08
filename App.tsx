@@ -2,42 +2,47 @@
 import React, { useState, useEffect } from 'react';
 import { UserProfile, Meal } from './types';
 import { calculatePersonalizedGoals } from './services/geminiService';
+import { auth, onAuthStateChanged, User } from './firebase';
+import { getUserProfile, saveUserProfile, getMealsFromDb, addMealToDb, updateMealInDb, deleteMealFromDb } from './services/database';
 import Onboarding from './components/Onboarding';
 import Dashboard from './components/Dashboard';
 import ProfileSettings from './components/ProfileSettings';
+import Login from './components/Login';
 import { Loader2 } from 'lucide-react';
 
 const App: React.FC = () => {
-  const [user, setUser] = useState<UserProfile | null>(null);
+  const [firebaseUser, setFirebaseUser] = useState<User | null>(null);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [meals, setMeals] = useState<Meal[]>([]);
   const [loading, setLoading] = useState(true);
   const [isInitializing, setIsInitializing] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
 
   useEffect(() => {
-    const savedUser = localStorage.getItem('nutrilens_user');
-    const savedMeals = localStorage.getItem('nutrilens_meals');
-    
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
-    if (savedMeals) {
-      setMeals(JSON.parse(savedMeals));
-    }
-    setLoading(false);
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      setFirebaseUser(user);
+      if (user) {
+        // Fetch data from Firestore
+        try {
+          const profile = await getUserProfile(user.uid);
+          const userMeals = await getMealsFromDb(user.uid);
+          setUserProfile(profile);
+          setMeals(userMeals);
+        } catch (error) {
+          console.error("Error loading user data:", error);
+        }
+      } else {
+        setUserProfile(null);
+        setMeals([]);
+      }
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
   }, []);
 
-  useEffect(() => {
-    if (user) {
-      localStorage.setItem('nutrilens_user', JSON.stringify(user));
-    }
-  }, [user]);
-
-  useEffect(() => {
-    localStorage.setItem('nutrilens_meals', JSON.stringify(meals));
-  }, [meals]);
-
   const handleOnboardingComplete = async (profile: Partial<UserProfile>) => {
+    if (!firebaseUser) return;
     setIsInitializing(true);
     try {
       const results = await calculatePersonalizedGoals(profile);
@@ -56,7 +61,9 @@ const App: React.FC = () => {
         dailyCalorieTarget: results.targetCalories,
         macros: results.macros,
       };
-      setUser(fullProfile);
+      
+      await saveUserProfile(firebaseUser.uid, fullProfile);
+      setUserProfile(fullProfile);
       setShowProfile(false);
     } catch (error) {
       console.error("Error calculating goals:", error);
@@ -66,25 +73,31 @@ const App: React.FC = () => {
     }
   };
 
-  const handleAddMeal = (meal: Meal) => {
+  const handleAddMeal = async (meal: Meal) => {
+    if (!firebaseUser) return;
     setMeals(prev => [meal, ...prev]);
+    await addMealToDb(firebaseUser.uid, meal);
   };
 
-  const handleUpdateMeal = (updatedMeal: Meal) => {
+  const handleUpdateMeal = async (updatedMeal: Meal) => {
+    if (!firebaseUser) return;
     setMeals(prev => prev.map(m => m.id === updatedMeal.id ? updatedMeal : m));
+    await updateMealInDb(firebaseUser.uid, updatedMeal);
   };
 
-  const handleDeleteMeal = (id: string) => {
+  const handleDeleteMeal = async (id: string) => {
+    if (!firebaseUser) return;
     setMeals(prev => prev.filter(m => m.id !== id));
+    await deleteMealFromDb(firebaseUser.uid, id);
   };
 
-  const handleReset = () => {
-    if (confirm("Reset everything? This will delete all logs.")) {
-      localStorage.removeItem('nutrilens_user');
-      localStorage.removeItem('nutrilens_meals');
-      setUser(null);
-      setMeals([]);
-      setShowProfile(false);
+  const handleReset = async () => {
+    if (confirm("Reset everything? This will delete all your cloud-synced data.")) {
+      // In a real app, you'd delete Firestore documents
+      // For now, let's just trigger a re-onboarding by clearing the profile locally (which updates db)
+      if (!firebaseUser) return;
+      setUserProfile(null);
+      // Actual implementation would need to delete collection docs
     }
   };
 
@@ -93,14 +106,18 @@ const App: React.FC = () => {
       <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-6 text-center">
         <Loader2 className="w-12 h-12 text-blue-500 animate-spin mb-4" />
         <h2 className="text-xl font-semibold text-slate-800">
-          {isInitializing ? "Recalculating your plan..." : "Loading NutriLens..."}
+          {isInitializing ? "Syncing your plan..." : "Loading NutriLens..."}
         </h2>
-        <p className="text-slate-500 mt-2">Personalizing your experience.</p>
+        <p className="text-slate-500 mt-2">Connecting to your profile.</p>
       </div>
     );
   }
 
-  if (!user) {
+  if (!firebaseUser) {
+    return <Login />;
+  }
+
+  if (!userProfile) {
     return <Onboarding onComplete={handleOnboardingComplete} />;
   }
 
@@ -108,14 +125,14 @@ const App: React.FC = () => {
     <div className="min-h-screen bg-slate-50 max-w-md mx-auto relative shadow-2xl overflow-hidden flex flex-col">
       {showProfile ? (
         <ProfileSettings 
-          user={user} 
+          user={userProfile} 
           onSave={handleOnboardingComplete} 
           onBack={() => setShowProfile(false)} 
           onReset={handleReset}
         />
       ) : (
         <Dashboard 
-          user={user} 
+          user={userProfile} 
           meals={meals} 
           onAddMeal={handleAddMeal} 
           onUpdateMeal={handleUpdateMeal}

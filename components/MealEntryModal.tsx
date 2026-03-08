@@ -71,8 +71,10 @@ const MealEntryModal: React.FC<Props> = ({ type, editingMeal, onClose, onAdd, on
     }
   };
 
-  const handleDelete = () => {
-    if (editingMeal && confirm("Remove this meal from your log?")) {
+  const handleDelete = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (editingMeal && window.confirm("Remove this meal from your log?")) {
       onDelete(editingMeal.id);
       onClose();
     }
@@ -88,11 +90,21 @@ const MealEntryModal: React.FC<Props> = ({ type, editingMeal, onClose, onAdd, on
           </div>
           <div className="flex gap-2">
             {editingMeal && (
-              <button onClick={handleDelete} className="p-3 bg-rose-50 rounded-2xl text-rose-500 hover:bg-rose-100 transition-all">
+              <button 
+                type="button"
+                onClick={handleDelete} 
+                className="p-3 bg-rose-50 rounded-2xl text-rose-500 hover:bg-rose-100 transition-all"
+                aria-label="Delete meal"
+              >
                 <Trash2 className="w-5 h-5" />
               </button>
             )}
-            <button onClick={onClose} className="p-3 bg-slate-100 rounded-2xl text-slate-400 hover:text-slate-600 transition-all">
+            <button 
+              type="button"
+              onClick={onClose} 
+              className="p-3 bg-slate-100 rounded-2xl text-slate-400 hover:text-slate-600 transition-all"
+              aria-label="Close modal"
+            >
               <X className="w-5 h-5" />
             </button>
           </div>
@@ -147,6 +159,7 @@ const MealEntryModal: React.FC<Props> = ({ type, editingMeal, onClose, onAdd, on
 
         <div className="p-8 pt-4 bg-white border-t border-slate-50">
           <button
+            type="button"
             onClick={handleAnalyze}
             disabled={(!description && !image) || isAnalyzing}
             className={`w-full py-5 rounded-[24px] flex items-center justify-center gap-3 font-black text-lg transition-all shadow-2xl ${
