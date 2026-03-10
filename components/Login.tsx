@@ -10,9 +10,13 @@ const Login: React.FC = () => {
     setLoading(true);
     try {
       await signInWithPopup(auth, googleProvider);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Login failed", error);
-      alert("Failed to sign in. Please try again.");
+      if (error.code === 'auth/unauthorized-domain') {
+        alert(`Authentication Error: This domain is not authorized in your Firebase project.\n\nPlease add these domains to your Firebase Console (Authentication > Settings > Authorized domains):\n\n1. ${window.location.hostname}`);
+      } else {
+        alert("Failed to sign in. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
