@@ -25,8 +25,15 @@ export enum WeightGoalSpeed {
   INTENSE = 'Aggressive'
 }
 
+export enum Theme {
+  LIGHT = 'Light',
+  DARK = 'Dark',
+  SYSTEM = 'System'
+}
+
 export interface UserProfile {
   name: string;
+  dateOfBirth?: string; // YYYY-MM-DD
   weight: number; // in kg
   height: number; // in cm
   gender: Gender;
@@ -43,6 +50,7 @@ export interface UserProfile {
     carbs: number;
     fat: number;
   };
+  theme?: Theme;
 }
 
 export interface Meal {
@@ -61,4 +69,23 @@ export interface Meal {
 export interface DailyLog {
   date: string; // YYYY-MM-DD
   meals: Meal[];
+}
+
+export interface WeightLog {
+  id: string;
+  weight: number;
+  date: string; // YYYY-MM-DD
+  timestamp: number;
+}
+
+export interface FavoriteFood {
+  id: string;
+  name: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  description: string;
+  defaultMealType?: string;
+  createdAt: number;
 }

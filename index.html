@@ -6,35 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>NutriLens</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-      body {
-        font-family: 'Inter', sans-serif;
-        background-color: #f8fafc;
-        -webkit-tap-highlight-color: transparent;
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
       }
-      .ios-glass {
-        background: rgba(255, 255, 255, 0.85);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-      }
-      /* Hide number arrows */
-      input::-webkit-outer-spin-button,
-      input::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-      }
-      input[type=number] {
-        -moz-appearance: textfield;
-      }
-      .custom-scrollbar::-webkit-scrollbar {
-        display: none;
-      }
-      .custom-scrollbar {
-        -ms-overflow-style: none;
-        scrollbar-width: none;
-      }
-    </style>
+    </script>
   <script type="importmap">
 {
   "imports": {

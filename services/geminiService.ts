@@ -5,9 +5,19 @@ import { UserProfile, Gender, Goal, ActivityLevel, WeightGoalSpeed } from "../ty
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 export const calculatePersonalizedGoals = async (profile: Partial<UserProfile>): Promise<{ targetCalories: number, macros: { protein: number, carbs: number, fat: number } }> => {
+  let ageString = 'Not specified';
+  if (profile.dateOfBirth) {
+    const dob = new Date(profile.dateOfBirth);
+    const ageDifMs = Date.now() - dob.getTime();
+    const ageDate = new Date(ageDifMs); // miliseconds from epoch
+    const age = Math.abs(ageDate.getUTCFullYear() - 1970);
+    ageString = `${age} years old`;
+  }
+
   const prompt = `
     Based on the following user data:
     Name: ${profile.name}
+    Age: ${ageString}
     Weight: ${profile.weight}kg
     Height: ${profile.height}cm
     Gender: ${profile.gender}

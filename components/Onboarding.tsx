@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { UserProfile, Gender, Goal, ActivityLevel, WeightGoalSpeed } from '../types';
-import { User, Scale, ArrowRight, Ruler, Target, Zap, Dumbbell, FastForward, Timer, TrendingDown } from 'lucide-react';
+import { User, Scale, ArrowRight, Ruler, Target, Zap, Dumbbell, FastForward, Timer, TrendingDown, Calendar } from 'lucide-react';
 
 interface Props {
   onComplete: (profile: Partial<UserProfile>) => void;
@@ -11,6 +11,7 @@ const Onboarding: React.FC<Props> = ({ onComplete }) => {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<Partial<UserProfile>>({
     name: '',
+    dateOfBirth: '',
     weight: 70,
     height: 170,
     gender: Gender.MALE,
@@ -43,19 +44,19 @@ const Onboarding: React.FC<Props> = ({ onComplete }) => {
     onComplete(formData);
   };
 
-  const isFormValid = formData.name && formData.weight && formData.height;
+  const isFormValid = formData.name && formData.dateOfBirth && formData.weight && formData.height;
 
   return (
-    <div className="min-h-screen bg-white max-w-md mx-auto flex flex-col">
+    <div className="min-h-screen bg-transparent max-w-md mx-auto flex flex-col">
       <div className="p-8 flex-1">
         <div className="mb-8">
-          <div className="h-1 w-full bg-slate-100 rounded-full">
+          <div className="h-1 w-full bg-white/40 rounded-full">
             <div 
-              className="h-full bg-blue-500 rounded-full transition-all duration-300"
+              className="h-full bg-blue-500/90 shadow-[0_0_10px_rgba(59,130,246,0.5)] rounded-full transition-all duration-300"
               style={{ width: `${(step / 5) * 100}%` }}
             />
           </div>
-          <p className="text-xs text-slate-400 mt-2 font-medium uppercase tracking-wider">Step {step} of 5</p>
+          <p className="text-xs text-slate-500 mt-2 font-medium uppercase tracking-wider">Step {step} of 5</p>
         </div>
 
         {step === 1 && (
@@ -67,14 +68,28 @@ const Onboarding: React.FC<Props> = ({ onComplete }) => {
               <div>
                 <label className="text-sm font-bold text-slate-700 mb-2 block">Your Name</label>
                 <div className="relative">
-                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
                   <input
                     type="text"
                     required
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full pl-12 pr-4 py-4 bg-slate-100 border-none rounded-[20px] focus:ring-2 focus:ring-blue-500 text-slate-900 font-medium transition-all outline-none"
+                    className="w-full pl-12 pr-4 py-4 glass-input rounded-[20px] text-slate-900 font-medium"
                     placeholder="e.g. Alex"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-sm font-bold text-slate-700 mb-2 block">Date of Birth</label>
+                <div className="relative">
+                  <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                  <input
+                    type="date"
+                    required
+                    value={formData.dateOfBirth}
+                    onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
+                    className="w-full pl-12 pr-4 py-4 glass-input rounded-[20px] text-slate-900 font-medium"
                   />
                 </div>
               </div>
@@ -83,14 +98,14 @@ const Onboarding: React.FC<Props> = ({ onComplete }) => {
                 <div>
                   <label className="text-sm font-bold text-slate-700 mb-2 block">Weight (kg)</label>
                   <div className="relative">
-                    <Scale className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                    <Scale className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
                     <input
                       type="number"
                       step="any"
                       required
                       value={formData.weight}
                       onChange={(e) => setFormData({ ...formData, weight: parseFloat(e.target.value) || 0 })}
-                      className="w-full pl-12 pr-4 py-4 bg-slate-100 border-none rounded-[20px] focus:ring-2 focus:ring-blue-500 text-slate-900 font-medium transition-all outline-none"
+                      className="w-full pl-12 pr-4 py-4 glass-input rounded-[20px] text-slate-900 font-medium"
                       placeholder="0.0"
                     />
                   </div>
@@ -98,14 +113,14 @@ const Onboarding: React.FC<Props> = ({ onComplete }) => {
                 <div>
                   <label className="text-sm font-bold text-slate-700 mb-2 block">Height (cm)</label>
                   <div className="relative">
-                    <Ruler className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                    <Ruler className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
                     <input
                       type="number"
                       step="any"
                       required
                       value={formData.height}
                       onChange={(e) => setFormData({ ...formData, height: parseFloat(e.target.value) || 0 })}
-                      className="w-full pl-12 pr-4 py-4 bg-slate-100 border-none rounded-[20px] focus:ring-2 focus:ring-blue-500 text-slate-900 font-medium transition-all outline-none"
+                      className="w-full pl-12 pr-4 py-4 glass-input rounded-[20px] text-slate-900 font-medium"
                       placeholder="0.0"
                     />
                   </div>
@@ -121,8 +136,8 @@ const Onboarding: React.FC<Props> = ({ onComplete }) => {
                       onClick={() => setFormData({ ...formData, gender: g })}
                       className={`flex-1 py-4 px-4 rounded-[20px] font-bold transition-all ${
                         formData.gender === g 
-                          ? 'bg-blue-600 text-white shadow-xl shadow-blue-100' 
-                          : 'bg-slate-100 text-slate-500'
+                          ? 'bg-blue-500/90 backdrop-blur-md text-white shadow-lg border border-blue-400/50' 
+                          : 'glass-button text-slate-600'
                       }`}
                     >
                       {g}
@@ -146,16 +161,16 @@ const Onboarding: React.FC<Props> = ({ onComplete }) => {
                   onClick={() => setFormData({ ...formData, activityLevel: level })}
                   className={`w-full text-left p-5 rounded-[24px] border-2 transition-all flex items-center gap-4 ${
                     formData.activityLevel === level 
-                      ? 'border-blue-500 bg-blue-50/50' 
-                      : 'border-slate-100 hover:border-slate-200 bg-slate-50'
+                      ? 'border-blue-400/50 bg-blue-500/10 backdrop-blur-md' 
+                      : 'border-white/40 bg-white/30 backdrop-blur-sm'
                   }`}
                 >
-                  <div className={`p-3 rounded-xl ${formData.activityLevel === level ? 'bg-blue-500 text-white' : 'bg-white text-slate-400'}`}>
+                  <div className={`p-3 rounded-xl ${formData.activityLevel === level ? 'bg-blue-500/90 text-white shadow-md' : 'bg-white/50 text-slate-500'}`}>
                     <Zap className="w-5 h-5" />
                   </div>
                   <div>
                     <h3 className={`font-bold ${formData.activityLevel === level ? 'text-slate-900' : 'text-slate-600'}`}>{level}</h3>
-                    <p className="text-xs text-slate-400">
+                    <p className="text-xs text-slate-500">
                       {level === ActivityLevel.SEDENTARY && "Office job, little to no exercise"}
                       {level === ActivityLevel.LIGHT && "Light exercise 1-3 days/week"}
                       {level === ActivityLevel.MODERATE && "Moderate exercise 3-5 days/week"}
@@ -181,12 +196,12 @@ const Onboarding: React.FC<Props> = ({ onComplete }) => {
                   onClick={() => setFormData({ ...formData, goal: g })}
                   className={`w-full text-left p-6 rounded-[32px] border-2 transition-all flex items-center justify-between group ${
                     formData.goal === g 
-                      ? 'border-blue-500 bg-blue-50/50' 
-                      : 'border-slate-100 hover:border-slate-200 bg-slate-50'
+                      ? 'border-blue-400/50 bg-blue-500/10 backdrop-blur-md' 
+                      : 'border-white/40 bg-white/30 backdrop-blur-sm'
                   }`}
                 >
                   <div className="flex items-center gap-4">
-                    <div className={`p-4 rounded-2xl transition-all ${formData.goal === g ? 'bg-blue-500 text-white shadow-lg shadow-blue-100' : 'bg-white text-slate-400 group-hover:text-slate-600'}`}>
+                    <div className={`p-4 rounded-2xl transition-all ${formData.goal === g ? 'bg-blue-500/90 text-white shadow-md' : 'bg-white/50 text-slate-500 group-hover:text-slate-600'}`}>
                       <Target className="w-6 h-6" />
                     </div>
                     <div>
@@ -235,17 +250,17 @@ const Onboarding: React.FC<Props> = ({ onComplete }) => {
                   onClick={() => setFormData({ ...formData, weightGoalSpeed: pace.val })}
                   className={`w-full text-left p-5 rounded-[24px] border-2 transition-all flex items-center gap-4 ${
                     formData.weightGoalSpeed === pace.val 
-                      ? 'border-blue-500 bg-blue-50/50' 
-                      : 'border-slate-100 bg-slate-50'
+                      ? 'border-blue-400/50 bg-blue-500/10 backdrop-blur-md' 
+                      : 'border-white/40 bg-white/30 backdrop-blur-sm'
                   }`}
                 >
-                  <div className={`p-3 rounded-xl ${formData.weightGoalSpeed === pace.val ? 'bg-blue-500 text-white' : 'bg-white text-slate-400'}`}>
+                  <div className={`p-3 rounded-xl ${formData.weightGoalSpeed === pace.val ? 'bg-blue-500/90 text-white shadow-md' : 'bg-white/50 text-slate-500'}`}>
                     {pace.icon}
                   </div>
                   <div>
                     <h3 className={`font-bold ${formData.weightGoalSpeed === pace.val ? 'text-slate-900' : 'text-slate-600'}`}>{pace.val}</h3>
-                    <p className="text-sm text-slate-500 font-medium">{pace.desc}</p>
-                    <p className="text-xs text-slate-400 mt-0.5">{pace.sub}</p>
+                    <p className="text-sm text-slate-600 font-medium">{pace.desc}</p>
+                    <p className="text-xs text-slate-500 mt-0.5">{pace.sub}</p>
                   </div>
                 </button>
               ))}
@@ -267,12 +282,12 @@ const Onboarding: React.FC<Props> = ({ onComplete }) => {
                   value={formData.sportsInfo}
                   onChange={(e) => setFormData({ ...formData, sportsInfo: e.target.value })}
                   placeholder="e.g. Basketball 10 hrs/week, Gym 4 hrs/week..."
-                  className="w-full px-6 py-4 bg-slate-100 border-none rounded-[20px] focus:ring-2 focus:ring-blue-500 text-slate-900 font-medium transition-all outline-none min-h-[100px] resize-none"
+                  className="w-full px-6 py-4 glass-input rounded-[20px] text-slate-900 font-medium min-h-[100px] resize-none"
                 />
               </div>
 
               <div className="grid grid-cols-1 gap-4">
-                <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest px-1 mt-2">Body Measurements</h3>
+                <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest px-1 mt-2">Body Measurements</h3>
                 <div>
                   <label className="text-sm font-bold text-slate-700 mb-2 block">Waist (cm)</label>
                   <input
@@ -280,7 +295,7 @@ const Onboarding: React.FC<Props> = ({ onComplete }) => {
                     step="any"
                     value={formData.waist || ''}
                     onChange={(e) => setFormData({ ...formData, waist: parseFloat(e.target.value) || undefined })}
-                    className="w-full px-6 py-4 bg-slate-100 border-none rounded-[20px] focus:ring-2 focus:ring-blue-500 text-slate-900 font-medium transition-all outline-none"
+                    className="w-full px-6 py-4 glass-input rounded-[20px] text-slate-900 font-medium"
                     placeholder="Enter measurement"
                   />
                 </div>
@@ -291,7 +306,7 @@ const Onboarding: React.FC<Props> = ({ onComplete }) => {
                     step="any"
                     value={formData.hips || ''}
                     onChange={(e) => setFormData({ ...formData, hips: parseFloat(e.target.value) || undefined })}
-                    className="w-full px-6 py-4 bg-slate-100 border-none rounded-[20px] focus:ring-2 focus:ring-blue-500 text-slate-900 font-medium transition-all outline-none"
+                    className="w-full px-6 py-4 glass-input rounded-[20px] text-slate-900 font-medium"
                     placeholder="Enter measurement"
                   />
                 </div>
@@ -302,7 +317,7 @@ const Onboarding: React.FC<Props> = ({ onComplete }) => {
                     step="any"
                     value={formData.chest || ''}
                     onChange={(e) => setFormData({ ...formData, chest: parseFloat(e.target.value) || undefined })}
-                    className="w-full px-6 py-4 bg-slate-100 border-none rounded-[20px] focus:ring-2 focus:ring-blue-500 text-slate-900 font-medium transition-all outline-none"
+                    className="w-full px-6 py-4 glass-input rounded-[20px] text-slate-900 font-medium"
                     placeholder="Enter measurement"
                   />
                 </div>
@@ -312,11 +327,11 @@ const Onboarding: React.FC<Props> = ({ onComplete }) => {
         )}
       </div>
 
-      <div className="p-8 ios-glass border-t border-slate-100 flex gap-4">
+      <div className="p-8 glass-header border-b-0 border-t border-white/60 flex gap-4">
         {step > 1 && (
           <button
             onClick={prevStep}
-            className="flex-1 py-5 bg-slate-100 text-slate-600 font-black rounded-[24px] transition-all hover:bg-slate-200"
+            className="flex-1 py-5 glass-button text-slate-600 font-black rounded-[24px]"
           >
             Back
           </button>
@@ -324,10 +339,10 @@ const Onboarding: React.FC<Props> = ({ onComplete }) => {
         <button
           onClick={step < 5 ? nextStep : handleSubmit}
           disabled={step === 1 && !isFormValid}
-          className={`flex-[2] py-5 font-black rounded-[24px] shadow-2xl transition-all flex items-center justify-center gap-2 ${
+          className={`flex-[2] py-5 font-black rounded-[24px] shadow-xl transition-all flex items-center justify-center gap-2 border ${
             step === 1 && !isFormValid 
-              ? 'bg-slate-100 text-slate-400 shadow-none cursor-not-allowed' 
-              : 'bg-blue-600 text-white shadow-blue-200 active:scale-95'
+              ? 'bg-white/40 backdrop-blur-md text-slate-500 shadow-none cursor-not-allowed border-white/50' 
+              : 'bg-blue-500/90 backdrop-blur-md text-white shadow-blue-200/50 active:scale-95 border-blue-400/50'
           }`}
         >
           {step < 5 ? (
